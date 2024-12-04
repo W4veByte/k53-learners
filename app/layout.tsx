@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { cn } from '@/lib/utils'
 import './globals.css'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
+import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const poppins = Poppins({
@@ -32,11 +33,11 @@ export default function RootLayout({
           <div className="flex flex-col min-h-screen">
             <header className="flex-shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <div className="container mx-auto flex h-14 items-center justify-between px-4">
-                <a className="flex items-center space-x-2" href="/">
+                <Link className="flex items-center space-x-2" href="/">
                   <span className="font-bold italic  sm:text-base">
                     K53 Learners
                   </span>
-                </a>
+                </Link>
                 <ThemeSwitcher />
               </div>
             </header>

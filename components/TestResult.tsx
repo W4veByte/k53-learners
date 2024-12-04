@@ -49,13 +49,13 @@ export default function TestResult({ score, totalQuestions, testType, onBack }: 
                 {passed ? (
                   <p className="text-lg text-green-600 font-semibold">You passed the test!</p>
                 ) : (
-                  <p className="text-lg text-red-600 font-semibold">You didn't pass. Keep practicing!</p>
+                  <p className="text-lg text-red-600 font-semibold">You didn&apos;t pass. Keep practicing!</p>
                 )}
               </div>
             </>
           ) : (
             <div className="text-center">
-              <p className="text-xl mb-4">You didn't complete the test within the time limit.</p>
+              <p className="text-xl mb-4">You didn&apos;t complete the test within the time limit.</p>
               <p className="text-lg text-yellow-600 font-semibold">All unanswered questions were marked as incorrect.</p>
             </div>
           )}
