@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import Flashcard from "./Flashcard";
 import { getQuestions } from "@/lib/questions";
 import TestResult from "./TestResult";
+import '../app/globals.css'
 
 interface Question {
   question: string;
@@ -113,7 +114,7 @@ export default function Test({
   }
 
   return (
-    <div className="container mx-auto px-4 py-4 sm:py-6 -mt-48">
+    <div className="container mx-auto px-4 py-4 sm:py-6 -mt-48 scrollable-mobile">
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <Button
           variant="outline"
@@ -141,7 +142,7 @@ export default function Test({
           )}
         </div>
       </div>
-
+  
       <div className="space-y-4 mb-6 sm:mb-8">
         <Progress value={progress} className="h-2 sm:h-3" />
         <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
@@ -151,7 +152,7 @@ export default function Test({
           <span>Score: {score}</span>
         </div>
       </div>
-
+  
       <Flashcard
         question={questions[currentQuestionIndex].question}
         imageUrl={questions[currentQuestionIndex].imageUrl}

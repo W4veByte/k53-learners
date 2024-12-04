@@ -58,3 +58,14 @@
     overflow: hidden;
   }
 }
+
+.scrollable-mobile {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .scrollable-mobile {
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+}
