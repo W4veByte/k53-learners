@@ -272,7 +272,7 @@ const questionsA: Question[] = [
       "6m from a level crossing",
       "4m from a tunnel",
       "5m from a pedestrian crossing",
-      "10m from a petrol station",
+      "1m from a fire hydrant",
     ],
     correctAnswer: "6m from a level crossing",
   },

@@ -67,5 +67,6 @@
   .scrollable-mobile {
     overflow-y: auto;
     max-height: 100vh;
+    padding-bottom: 20px; /* Add some padding to ensure the last element is not cut off */
   }
 }
