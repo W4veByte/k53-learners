@@ -559,7 +559,7 @@ const questionsB: Question[] = [
     correctAnswer: "Minibuses",
   },
   {
-    question: "Sigh N8 shows you that there ...",
+    question: "Sign N8 shows you that there ...",
     imageUrl: "/two-way-traffic.png",
     choices: [
       "Are two lanes ahead in different directions",

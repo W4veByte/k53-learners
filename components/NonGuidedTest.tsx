@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft } from 'lucide-react';
-import Flashcard from "./Flashcard";
+import NonGuidedFlashcard from "./NonGuidedFlashcard";
 import { getQuestions } from "@/lib/questions";
-import TestResult from "./TestResult";
-import '../app/globals.css'
+import NonGuidedTestResult from "./NonGuidedTestResult";
+import QuestionIndex from "./QuestionIndex";
 
 interface Question {
   question: string;
@@ -23,7 +23,7 @@ interface TestProps {
   customTimeLimit?: number;
 }
 
-export default function Test({
+export default function NonGuidedTest({
   testType,
   onBack,
   customSections,
@@ -32,9 +32,11 @@ export default function Test({
   const [timeLeft, setTimeLeft] = useState((customTimeLimit || 50) * 60);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<(string | null)[]>([]);
+  const [markedForReview, setMarkedForReview] = useState<boolean[]>([]);
   const [completedQuestions, setCompletedQuestions] = useState(0);
   const [isTestCompleted, setIsTestCompleted] = useState(false);
+  const [showQuestionIndex, setShowQuestionIndex] = useState(false);
 
   useEffect(() => {
     if (testType === "MAIN") {
@@ -59,6 +61,13 @@ export default function Test({
   }, [testType, customSections]);
 
   useEffect(() => {
+    if (questions.length > 0) {
+      setAnswers(new Array(questions.length).fill(null));
+      setMarkedForReview(new Array(questions.length).fill(false));
+    }
+  }, [questions]);
+
+  useEffect(() => {
     if (testType === "MAIN" || testType === "CUSTOM") {
       const timer = setInterval(() => {
         setTimeLeft((prevTime) => {
@@ -75,18 +84,30 @@ export default function Test({
     }
   }, [testType]);
 
-  const handleAnswer = (isCorrect: boolean) => {
-    if (isCorrect) {
-      setScore(score + 1);
-    }
-    setCompletedQuestions(completedQuestions + 1);
+  const handleAnswer = (answer: string) => {
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = answer;
+    setAnswers(newAnswers);
+    setCompletedQuestions(newAnswers.filter(a => a !== null).length);
+  };
+
+  const handleMarkForReview = () => {
+    const newMarkedForReview = [...markedForReview];
+    newMarkedForReview[currentQuestionIndex] = !newMarkedForReview[currentQuestionIndex];
+    setMarkedForReview(newMarkedForReview);
   };
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      handleTestCompletion();
+      setShowQuestionIndex(true);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
@@ -95,20 +116,19 @@ export default function Test({
   };
 
   const getTestResults = () => {
-    if (testType === "MAIN") {
-      return {
-        testA: { correct: score, total: 30 },
-        testB: { correct: score, total: 30 },
-        testC: { correct: score, total: 8 },
-      };
-    } else {
-      const total = testType === "C" ? 8 : 30;
-      return {
-        testA: testType === "A" ? { correct: score, total } : { correct: 0, total: 30 },
-        testB: testType === "B" ? { correct: score, total } : { correct: 0, total: 30 },
-        testC: testType === "C" ? { correct: score, total } : { correct: 0, total: 8 },
-      };
-    }
+    let testA = { correct: 0, total: 30 };
+    let testB = { correct: 0, total: 30 };
+    let testC = { correct: 0, total: 8 };
+
+    questions.forEach((question, index) => {
+      if (answers[index] === question.correctAnswer) {
+        if (index < 30) testA.correct++;
+        else if (index < 60) testB.correct++;
+        else testC.correct++;
+      }
+    });
+
+    return { testA, testB, testC };
   };
 
   const progress = (completedQuestions / questions.length) * 100;
@@ -125,10 +145,26 @@ export default function Test({
 
   if (isTestCompleted) {
     return (
-      <TestResult
+      <NonGuidedTestResult
         results={getTestResults()}
         testType={testType}
         onBack={onBack}
+      />
+    );
+  }
+
+  if (showQuestionIndex) {
+    return (
+      <QuestionIndex
+        questions={questions}
+        answers={answers}
+        markedForReview={markedForReview}
+        onQuestionSelect={(index) => {
+          setCurrentQuestionIndex(index);
+          setShowQuestionIndex(false);
+        }}
+        onComplete={handleTestCompletion}
+        onBack={() => setShowQuestionIndex(false)}
       />
     );
   }
@@ -173,17 +209,25 @@ export default function Test({
           <span>
             Progress: {completedQuestions} / {questions.length}
           </span>
-          <span>Score: {score}</span>
+          <span>
+            Marked for review: {markedForReview.filter(Boolean).length}
+          </span>
         </div>
       </div>
 
-      <Flashcard
+      <NonGuidedFlashcard
         question={questions[currentQuestionIndex].question}
         imageUrl={questions[currentQuestionIndex].imageUrl}
         choices={questions[currentQuestionIndex].choices}
-        correctAnswer={questions[currentQuestionIndex].correctAnswer}
+        selectedAnswer={answers[currentQuestionIndex]}
         onAnswer={handleAnswer}
         onNext={handleNextQuestion}
+        onPrevious={handlePreviousQuestion}
+        isFirst={currentQuestionIndex === 0}
+        isLast={currentQuestionIndex === questions.length - 1}
+        isMarkedForReview={markedForReview[currentQuestionIndex]}
+        onMarkForReview={handleMarkForReview}
+        onShowQuestionIndex={() => setShowQuestionIndex(true)}
       />
     </div>
   );

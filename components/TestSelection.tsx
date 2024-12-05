@@ -9,8 +9,9 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { BookOpen, SignpostBig, Car, Book, Settings } from "lucide-react";
+import { BookOpen, SignpostBig, Car, Book, Settings } from 'lucide-react';
 import Test from "./Test";
+import NonGuidedTest from "./NonGuidedTest";
 import CustomTestSetup from "./CustomTestSetup";
 
 const testTypes = [
@@ -48,6 +49,7 @@ const testTypes = [
 
 export default function TestSelection() {
   const [selectedTest, setSelectedTest] = useState<string | null>(null);
+  const [isGuidedTest, setIsGuidedTest] = useState(false);
   const [customTestSetup, setCustomTestSetup] = useState(false);
 
   if (customTestSetup) {
@@ -55,8 +57,10 @@ export default function TestSelection() {
   }
 
   if (selectedTest) {
-    return (
+    return isGuidedTest ? (
       <Test testType={selectedTest} onBack={() => setSelectedTest(null)} />
+    ) : (
+      <NonGuidedTest testType={selectedTest} onBack={() => setSelectedTest(null)} />
     );
   }
 
@@ -85,23 +89,24 @@ export default function TestSelection() {
               </CardHeader>
               <CardContent>
                 <Button
-                  onClick={() =>
-                    testTypes[0].id === "CUSTOM"
-                      ? setCustomTestSetup(true)
-                      : setSelectedTest(testTypes[0].id)
-                  }
+                  onClick={() => {
+                    setSelectedTest(testTypes[0].id);
+                    setIsGuidedTest(false);
+                  }}
                   className="w-full font-medium text-sm"
                 >
                   Start Test
                 </Button>
-                {testTypes[0].id !== "CUSTOM" && (
-                  <Button
-                    variant="outline"
-                    className="w-full dark:hover:bg-slate-700 hover:bg-slate-200 dark:bg-slate-900 font-medium text-sm mt-2"
-                  >
-                    <Book className="mr-2 h-4 w-4" /> Guided Test
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedTest(testTypes[0].id);
+                    setIsGuidedTest(true);
+                  }}
+                  className="w-full dark:hover:bg-slate-700 hover:bg-slate-200 dark:bg-slate-900 font-medium text-sm mt-2"
+                >
+                  <Book className="mr-2 h-4 w-4" /> Guided Test
+                </Button>
               </CardContent>
             </Card>
             <Card className="bg-card hover:bg-accent transition-colors duration-300">
@@ -120,20 +125,10 @@ export default function TestSelection() {
               </CardHeader>
               <CardContent>
                 <Button
-                  onClick={() =>
-                    testTypes[1].id === "CUSTOM"
-                      ? setCustomTestSetup(true)
-                      : setSelectedTest(testTypes[1].id)
-                  }
+                  onClick={() => setCustomTestSetup(true)}
                   className="w-full font-medium text-sm"
                 >
                   Start Test
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full dark:hover:bg-slate-700 hover:bg-slate-200 dark:bg-slate-900 font-medium text-sm mt-2"
-                >
-                  <Book className="mr-2 h-4 w-4" /> Guided Test
                 </Button>
               </CardContent>
             </Card>
@@ -162,23 +157,24 @@ export default function TestSelection() {
                 </CardHeader>
                 <CardContent>
                   <Button
-                    onClick={() =>
-                      test.id === "CUSTOM"
-                        ? setCustomTestSetup(true)
-                        : setSelectedTest(test.id)
-                    }
+                    onClick={() => {
+                      setSelectedTest(test.id);
+                      setIsGuidedTest(false);
+                    }}
                     className="w-full font-medium text-sm"
                   >
                     Start Test
                   </Button>
-                  {test.id !== "CUSTOM" && (
-                    <Button
-                      variant="outline"
-                      className="w-full dark:hover:bg-slate-700 hover:bg-slate-200 dark:bg-slate-900 font-medium text-sm mt-2"
-                    >
-                      <Book className="mr-2 h-4 w-4" /> Guided Test
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedTest(test.id);
+                      setIsGuidedTest(true);
+                    }}
+                    className="w-full dark:hover:bg-slate-700 hover:bg-slate-200 dark:bg-slate-900 font-medium text-sm mt-2"
+                  >
+                    <Book className="mr-2 h-4 w-4" /> Guided Test
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -188,3 +184,4 @@ export default function TestSelection() {
     </div>
   );
 }
+

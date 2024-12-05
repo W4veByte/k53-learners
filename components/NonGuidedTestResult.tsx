@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, XCircle, RotateCcw, Home } from 'lucide-react'
 
-interface TestResultProps {
+interface NonGuidedTestResultProps {
   results: {
     testA: { correct: number; total: number };
     testB: { correct: number; total: number };
@@ -12,45 +12,18 @@ interface TestResultProps {
   onBack: () => void;
 }
 
-export default function TestResult({ results, testType, onBack }: TestResultProps) {
+export default function NonGuidedTestResult({ results, testType, onBack }: NonGuidedTestResultProps) {
   const { testA, testB, testC } = results;
 
-  const getTestResults = () => {
-    switch (testType) {
-      case 'A':
-        return { correct: testA.correct, total: testA.total };
-      case 'B':
-        return { correct: testB.correct, total: testB.total };
-      case 'C':
-        return { correct: testC.correct, total: testC.total };
-      default:
-        return {
-          correct: testA.correct + testB.correct + testC.correct,
-          total: testA.total + testB.total + testC.total
-        };
-    }
-  };
-
-  const { correct, total } = getTestResults();
-  const percentage = Math.round((correct / total) * 100);
+  const totalQuestions = testA.total + testB.total + testC.total;
+  const totalCorrect = testA.correct + testB.correct + testC.correct;
+  const percentage = Math.round((totalCorrect / totalQuestions) * 100);
   const passed = percentage >= 75;
-  const completed = correct > 0 || total > 0;
+  const completed = totalCorrect > 0 || totalQuestions > 0;
 
-  const getTestTitle = () => {
-    switch (testType) {
-      case 'A':
-        return 'Rules of the Road Test';
-      case 'B':
-        return 'Traffic Signs & Markings Test';
-      case 'C':
-        return 'Vehicle Controls Test';
-      case 'MAIN':
-        return 'Main Practice Test';
-      case 'CUSTOM':
-        return 'Custom Test';
-      default:
-        return 'Test';
-    }
+  const getSectionPassStatus = (correct: number, total: number) => {
+    const percentage = (correct / total) * 100;
+    return percentage >= 75 ? 'Pass' : 'Fail';
   };
 
   return (
@@ -61,7 +34,10 @@ export default function TestResult({ results, testType, onBack }: TestResultProp
             {completed ? (passed ? 'Congratulations!' : 'Test Completed') : 'Test Incomplete'}
           </CardTitle>
           <p className="text-lg sm:text-xl text-muted-foreground mb-4">
-            {getTestTitle()}
+            {testType === 'MAIN' ? 'Main Practice Test' : 
+             testType === 'A' ? 'Rules of the Road Test' :
+             testType === 'B' ? 'Traffic Signs & Markings Test' :
+             testType === 'C' ? 'Vehicle Controls Test' : 'Custom Test'}
           </p>
           {completed ? (
             passed ? (
@@ -74,7 +50,15 @@ export default function TestResult({ results, testType, onBack }: TestResultProp
           )}
         </CardHeader>
         <CardContent className="space-y-6">
-          {testType === 'MAIN' ? (
+          {testType !== 'MAIN' ? (
+            <div className="text-center">
+              <h2 className="text-xl font-semibold mt-4">Section Test Result:</h2>
+              <p>{testType === 'A' ? 'Rules of the Road' : testType === 'B' ? 'Traffic and Road Signs' : 'Vehicle Controls'}: {totalCorrect}/{totalQuestions}</p>
+              <p className="mt-2">
+                Percentage: {percentage}% ({getSectionPassStatus(totalCorrect, totalQuestions)})
+              </p>
+            </div>
+          ) : (
             <>
               <div className="text-center">
                 <h2 className="text-xl font-semibold mt-4">Test Score Breakdown:</h2>
@@ -82,7 +66,7 @@ export default function TestResult({ results, testType, onBack }: TestResultProp
                 <p>Traffic and Road Signs: {testB.correct}/{testB.total}</p>
                 <p>Vehicle Controls: {testC.correct}/{testC.total}</p>
                 <p className="mt-2">
-                  Total Score: {correct}/{total} ({percentage}%)
+                  Total Score: {totalCorrect}/{totalQuestions} ({percentage}%)
                 </p>
                 <p className="text-lg mt-2">
                   {passed ? (
@@ -92,17 +76,13 @@ export default function TestResult({ results, testType, onBack }: TestResultProp
                   )}
                 </p>
               </div>
+              <div className="text-center mt-4">
+                <h2 className="text-xl font-semibold">Section Results:</h2>
+                <p>Rules of the Road: {testA.correct}/{testA.total} ({getSectionPassStatus(testA.correct, testA.total)})</p>
+                <p>Traffic and Road Signs: {testB.correct}/{testB.total} ({getSectionPassStatus(testB.correct, testB.total)})</p>
+                <p>Vehicle Controls: {testC.correct}/{testC.total} ({getSectionPassStatus(testC.correct, testC.total)})</p>
+              </div>
             </>
-          ) : (
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mt-4">Section Test Result:</h2>
-              <p>{testType === 'A' ? 'Rules of the Road' : 
-                 testType === 'B' ? 'Traffic and Road Signs' : 
-                 'Vehicle Controls'}: {correct}/{total}</p>
-              <p className="mt-2">
-                Percentage: {percentage}% ({passed ? 'Pass' : 'Fail'})
-              </p>
-            </div>
           )}
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button onClick={onBack} size="lg" className="font-medium text-lg">
