@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Flag, ListOrdered } from 'lucide-react'
 
 interface NonGuidedFlashcardProps {

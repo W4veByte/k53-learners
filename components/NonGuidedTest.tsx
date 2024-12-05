@@ -116,9 +116,9 @@ export default function NonGuidedTest({
   };
 
   const getTestResults = () => {
-    let testA = { correct: 0, total: 30 };
-    let testB = { correct: 0, total: 30 };
-    let testC = { correct: 0, total: 8 };
+    const testA = { correct: 0, total: 30 };
+    const testB = { correct: 0, total: 30 };
+    const testC = { correct: 0, total: 8 };
 
     questions.forEach((question, index) => {
       if (answers[index] === question.correctAnswer) {
